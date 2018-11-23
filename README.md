@@ -2,7 +2,9 @@
 # EasyKeras
 更容易的Keras
 
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+
+
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/keras-team/keras/blob/master/LICENSE)
 
 本工具包是在Keras的基础上进一步的封装，对于NLP等领域添加更容易上手的操作。
 特别的，我们主要针对以下内容进行了增加和改造。
