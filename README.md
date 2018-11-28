@@ -27,5 +27,6 @@
     - attention （注意力机制）
     - embedding（词嵌入）
     - matching（语义匹配）
+    - gated（门控网络）
   - tasks（常用任务）
 
