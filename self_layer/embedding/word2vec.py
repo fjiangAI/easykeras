@@ -2,17 +2,15 @@ __author__ = 'jf'
 from gensim.models import KeyedVectors
 from keras.layers import Embedding
 import numpy as np
-def w2v_encoding_layer(tokenizer,word2vec_filepath,embedding_dim):
+def w2v_encoding_layer(tokenizer,embeddings_dic,embedding_dim):
     '''
     使用已有的word2vec模型来获得embedding层
     :param tokenizer: 所有词的tokenizer
-    :param word2vec_filepath: word2vec模型的文件路径
+    :param embeddings_dic: word2vec模型加载后词典
     :param embedding_dim: 词向量的维度
     :return: embedding层
     '''
     tokenizer = tokenizer
-    #embeddings_dic形式为“词：向量”；
-    embeddings_dic = KeyedVectors.load_word2vec_format(word2vec_filepath, binary=True, unicode_errors='ignore')
     #word_index形式为"词：序号";
     word_index = tokenizer.word_index
     #样本中词的数目+1
