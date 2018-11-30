@@ -28,5 +28,6 @@
     - embedding（词嵌入）
     - matching（语义匹配）
     - gated（门控网络）
+    - general(一般层)
   - tasks（常用任务）
 
