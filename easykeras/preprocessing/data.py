@@ -1,5 +1,7 @@
-__author__ = 'jf'
+#coding:utf-8
+
 class DataProcessor(object):
+
   def get_train_examples(self, data_dir):
       raise NotImplementedError()
 
