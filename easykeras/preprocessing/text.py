@@ -15,12 +15,12 @@ class TextProcessor():
         has_dic: 是否已经生成词表
     """
 
-    def __init__(self):
+    def __init__(self, max_word_num=None):
         """初始化文本预处理类"""
-        self.tokenizer = Tokenizer()
+        self.tokenizer = Tokenizer(num_words=max_word_num)
         self.has_dic = False
 
-    def get_vocabulary(self):
+    def get_vocab(self):
         """获取词表
 
         Returns:
@@ -37,8 +37,8 @@ class TextProcessor():
             return None
         return self.tokenizer.word_index
 
-    def get_words_num(self):
-        """获取词语数量
+    def get_vocab_size(self):
+        """获取词表大小
 
         Returns:
             词表中的词语数量
@@ -143,7 +143,7 @@ class TextProcessor():
         if (not self.has_dic):
             print('请先调用 read_all_texts() 函数生成词表!')
             return tuple([None for x in range(len(texts))])
-        return tuple([self._vectorize_sequences(x, self.get_words_num()+1) for x in texts])
+        return tuple([self._vectorize_sequences(x, self.get_vocab_size()+1) for x in texts])
     
 if __name__ == "__main__":
     texts_1 = ['中国 的 首都 是 北京', '北京 天安门', '中国']
@@ -156,8 +156,8 @@ if __name__ == "__main__":
     processor = TextProcessor() # 文本预处理器
     # 读取文本，生成词表
     processor.read_all_texts(texts_1, texts_2)
-    print('词表大小:', processor.get_words_num())
-    print('词表:', processor.get_vocabulary())
+    print('词表大小:', processor.get_vocab_size())
+    print('词表:', processor.get_vocab())
     # 文本转换为数字编号序列
     print('转换为数字序列(长度4)：')
     texts_1_num, texts_2_num = processor.texts_to_num(4, texts_1, texts_2)
