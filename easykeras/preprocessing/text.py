@@ -78,21 +78,10 @@ class TextProcessor():
         return self.tokenizer.word_index
     
     def _process_text(self, texts, length):
-        """处理文本"""
         # 词语字符串->词语编号列表
         sequences = self.tokenizer.texts_to_sequences(texts)
         # 统一长度
         return pad_sequences(sequences, maxlen=length)
-
-    def _vectorize_sequences(self, texts, dimension):
-        """词袋编号"""
-        # 词语字符串->词语编号列表
-        sequences = self.tokenizer.texts_to_sequences(texts)
-        # 创建一个形状为(len(sequences), dimension)的零矩阵
-        results = np.zeros((len(sequences), dimension))
-        for i, sequence in enumerate(sequences):
-            results[i, sequence] = 1. # 将results[i]的指定索引设为1
-        return results
 
     def texts_to_num(self, length, *texts):
         """文本转换为数字编号序列
@@ -117,9 +106,13 @@ class TextProcessor():
         """
         if (not self.has_dic):
             print('请先调用 read_all_texts() 函数生成词表!')
+            if (len(texts) == 1):
+                return None
             return tuple([None for x in range(len(texts))])
+        if (len(texts) == 1):
+            return self._process_text(texts[0], length)
         return tuple([self._process_text(x, length) for x in texts])
-
+    
     def texts_to_bow(self, *texts):
         """文本转换为词袋编号序列
 
@@ -142,8 +135,12 @@ class TextProcessor():
         """
         if (not self.has_dic):
             print('请先调用 read_all_texts() 函数生成词表!')
+            if (len(texts) == 1):
+                return None
             return tuple([None for x in range(len(texts))])
-        return tuple([self._vectorize_sequences(x, self.get_vocab_size()+1) for x in texts])
+        if (len(texts) == 1):
+            return self.tokenizer.texts_to_matrix(texts[0], mode='binary')
+        return tuple([self.tokenizer.texts_to_matrix(x, mode='binary') for x in texts])
     
 if __name__ == "__main__":
     texts_1 = ['中国 的 首都 是 北京', '北京 天安门', '中国']
