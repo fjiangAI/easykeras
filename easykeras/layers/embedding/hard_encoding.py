@@ -1,6 +1,6 @@
 __author__ = 'jf'
 from keras.layers import Embedding
-def hard_encoding_layer(vocab,embedding_dim,trainable):
+def hard_encoding_layer(vocab,embedding_dim,trainable=False):
     '''
     硬编码层，可以应用于词性、结构等硬编码
     :param vocab:
@@ -8,6 +8,6 @@ def hard_encoding_layer(vocab,embedding_dim,trainable):
     :return:
     '''
     index = len(vocab)
-    num= len(index)+1
+    num= index+1
     embedding_layer = Embedding(num, embedding_dim,trainable=trainable)
     return embedding_layer
