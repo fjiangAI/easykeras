@@ -7,20 +7,20 @@ import numpy as np
 class TextProcessor():
     """文本预处理
 
-    将文本（或词语序列）转换为定长词语编号序列
-    或者词袋(Bag-Of-Word)编号序列
+    将文本（或词语序列）转换为编号序列
 
-    Attributes:
-        tokenizer: Keras自带的文本处理工具类
-        has_dic: 是否已经生成词表
+    Args:
+        max_word_num: 保留出现频率最高前 `max_word_num` 个词
+                      为None，则全部保留
+    
     """
 
     def __init__(self, max_word_num=None):
         """初始化文本预处理类
 
-        Args:
-            max_word_num: 保留出现频率最高前 `max_word_num` 个词
-                          为None，则全部保留
+        Attributes:
+            tokenizer: Keras自带的文本处理工具类
+            has_dic: 是否已经生成词表
         """
         self.tokenizer = Tokenizer(num_words=max_word_num)
         self.has_dic = False
@@ -144,7 +144,7 @@ class TextProcessor():
                    也可以是词语列表
 
         Returns:
-            一个或多个转换后的 `(sample_num, vocab_size+1)` 二维矩阵。
+            一个或多个转换后的 `(sample_num, vocab_size)` 二维矩阵。
             例如：
 
             ['a b c', 'a b', 'd'] -> [[0. 1. 1. 1. 0. 0.]
@@ -174,7 +174,7 @@ class TextProcessor():
                    也可以是词语列表
 
         Returns:
-            一个或多个转换后的 `(sample_num, length, vocab_size+1)` 三维矩阵。
+            一个或多个转换后的 `(sample_num, length, vocab_size)` 三维矩阵。
             例如：
 
             ['a b c', 'a b', 'd'] -> [[[0. 0. 0. 1. 0.]
