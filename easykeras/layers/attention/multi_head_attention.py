@@ -33,7 +33,7 @@ class Position_Embedding(Layer):
             return (input_shape[0], input_shape[1], input_shape[2]+self.size)
 
 
-class Attention(Layer):
+class Multi_Head_Attention(Layer):
     '''
     Multi_Head Attention
 
@@ -53,7 +53,13 @@ class Attention(Layer):
         self.nb_head = nb_head
         self.size_per_head = size_per_head
         self.output_dim = nb_head*size_per_head
-        super(Attention, self).__init__(**kwargs)
+        super(Multi_Head_Attention, self).__init__(**kwargs)
+
+    def get_config(self):
+        config = super().get_config()
+        config['nb_head'] = self.nb_head
+        config['size_per_head'] = self.size_per_head
+        return config
 
     def build(self, input_shape):
         self.WQ = self.add_weight(name='WQ',
@@ -68,7 +74,7 @@ class Attention(Layer):
                                   shape=(input_shape[2][-1], self.output_dim),
                                   initializer='glorot_uniform',
                                   trainable=True)
-        super(Attention, self).build(input_shape)
+        super(Multi_Head_Attention, self).build(input_shape)
 
     def Mask(self, inputs, seq_len, mode='mul'):
         if seq_len == None:
@@ -118,6 +124,6 @@ class Attention(Layer):
         return (input_shape[0][0], input_shape[0][1], self.output_dim)
 
 def self_attention_layer(text1_seq,nb_head=8,size_per_head=16):
-    self_attention_encoder=Attention(nb_head,size_per_head)
+    self_attention_encoder=Multi_Head_Attention(nb_head,size_per_head)
     self_attention=self_attention_encoder([text1_seq,text1_seq,text1_seq])
     return self_attention
