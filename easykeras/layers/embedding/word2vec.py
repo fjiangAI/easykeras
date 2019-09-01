@@ -1,5 +1,4 @@
 __author__ = 'jf'
-from gensim.models import KeyedVectors
 from keras.layers import Embedding
 import numpy as np
 def w2v_encoding_layer(vocab,embeddings_dic,embedding_dim,trainable=False):
