@@ -1,11 +1,14 @@
 __author__ = 'jf'
 from keras.preprocessing import sequence
-from keras.layers import Dense, Dropout, Activation
 from keras.layers import Embedding,Input
 from keras.layers import Conv1D, GlobalMaxPooling1D
 from keras.datasets import imdb
 from keras.models import Model
-from easykeras.layers.gated.gated_layer import GatedLinearUnit
+import sys
+sys.path.append("../../")
+from easykeras.layers.gated.gated_layer import gated_linear_unit
+from easykeras.layers.general.general_dense import double_dense_layer
+#epoch 10:89.02
 # set parameters:
 max_features = 5000
 maxlen = 400
@@ -14,7 +17,7 @@ embedding_dims = 50
 filters = 250
 kernel_size = 3
 hidden_dims = 250
-epochs = 2
+epochs = 10
 
 print('Loading data...')
 (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
@@ -33,20 +36,14 @@ embedding_layer=Embedding(max_features,
                     embedding_dims,
                     input_length=maxlen)
 embedding_output=embedding_layer(inputs)
-gcnn_layer=GatedLinearUnit(input_shape=embedding_output.shape,c_kernel_size=3,c_filters=250,h_dim=100,kernel_layer="CNN")
+gcnn_layer=gated_linear_unit(input_shape=embedding_output.shape,c_kernel_size=3,c_filters=250,h_dim=100,kernel_layer="CNN")
 gcnn_output=gcnn_layer(embedding_output)
 globalpooling_layer=GlobalMaxPooling1D()
 globalpooling_output=globalpooling_layer(gcnn_output)
-dense_layer2=Dense(hidden_dims)
-dense_layer2_output=dense_layer2(globalpooling_output)
-dropout_layer2_layer=Dropout(0.2)
-dropout_layer2_output=dropout_layer2_layer(dense_layer2_output)
-activation2_layer=Activation('relu')
-activation2_output=activation2_layer(dropout_layer2_output)
-finaldense_layer=Dense(1)
-finaldense_out=finaldense_layer(activation2_output)
-finalactivation_layer=Activation('sigmoid')
-finalactivation_out=finalactivation_layer(finaldense_out)
+print(globalpooling_output.shape)
+ddl=double_dense_layer(input_shape=globalpooling_output.shape,output_activation='sigmoid',output_size=1)
+finalactivation_out=ddl(globalpooling_output)
+print(finalactivation_out.shape)
 model= Model(inputs=[inputs], outputs=finalactivation_out)
 model.compile(loss='binary_crossentropy',
               optimizer='adam',

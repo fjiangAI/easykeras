@@ -1,12 +1,13 @@
 __author__ = 'jf'
 from keras.preprocessing import sequence
-from keras.layers import Dense, Dropout, Activation
-from keras.layers import Embedding,Input
-from keras.layers import Conv1D, GlobalMaxPooling1D
 from keras.datasets import imdb
 from keras.models import Model
-#epoch 10: 87.25
-#set parameters:
+import sys
+sys.path.append("../../")
+from easykeras.layers.capsule import Capsule
+from keras.layers import *
+#epoch 10: 86.29
+# set parameters:
 max_features = 5000
 maxlen = 400
 batch_size = 32
@@ -15,11 +16,17 @@ filters = 250
 kernel_size = 3
 hidden_dims = 250
 epochs = 10
-
+num_classes=2
+from keras import utils
 print('Loading data...')
 (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
 print(len(x_train), 'train sequences')
 print(len(x_test), 'test sequences')
+
+
+#Capsule分类是类似Softmax一样，需要先离散化。
+y_train = utils.to_categorical(y_train, num_classes)
+y_test = utils.to_categorical(y_test, num_classes)
 
 print('Pad sequences (samples x time)')
 x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
@@ -41,19 +48,15 @@ conv_layer=Conv1D(filters,
                  activation='relu',
                  strides=1)
 conv_output=conv_layer(dropout_output) #(?,398,250)
-globalpooling_layer=GlobalMaxPooling1D()
-globalpooling_output=globalpooling_layer(conv_output)#（？,250）
-dense_layer2=Dense(hidden_dims)
-dense_layer2_output=dense_layer2(globalpooling_output)# (?,250)
-dropout_layer2_layer=Dropout(0.2)
-dropout_layer2_output=dropout_layer2_layer(dense_layer2_output)
-activation2_layer=Activation('relu')
-activation2_output=activation2_layer(dropout_layer2_output)
-finaldense_layer=Dense(1)
-finaldense_out=finaldense_layer(activation2_output)#(?,1)
-finalactivation_layer=Activation('sigmoid')
-finalactivation_out=finalactivation_layer(finaldense_out)#(?,1)
-model= Model(inputs=[inputs], outputs=finalactivation_out)
+print("conv:")
+print(conv_output.shape)
+capsule = Capsule(2, 8, 3, True)(conv_output) # (?,2,32)
+print("capsule:")
+print(capsule.shape)
+output = Lambda(lambda z: K.sqrt(K.sum(K.square(z), 2)))(capsule) #(?,2)
+print("output:")
+print(output.shape)
+model= Model(inputs=[inputs], outputs=output)
 model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
