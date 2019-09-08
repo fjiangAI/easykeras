@@ -1,6 +1,7 @@
 __author__ = 'jf'
 from keras.layers import Embedding
 import numpy as np
+
 def w2v_encoding_layer(vocab,embeddings_dic,embedding_dim,trainable=False):
     '''
     使用已有的word2vec模型来获得embedding层
