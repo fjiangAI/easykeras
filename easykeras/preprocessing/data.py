@@ -39,7 +39,9 @@ def read_data_file(data_file, split=' ', num=None, mode='text', encoding='utf-8'
 
 
 class DataProcessor(object):
-
+    """
+    数据处理基类，在具体任务的时候再实现数据的格式化
+    """
     def get_train_examples(self, data_dir):
         raise NotImplementedError()
 
