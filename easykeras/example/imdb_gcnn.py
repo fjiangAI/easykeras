@@ -2,8 +2,8 @@ __author__ = 'jf'
 from keras.layers import Embedding
 from keras.layers import GlobalMaxPooling1D
 import keras
-from easykeras.layers.gated.gated_layer import gated_linear_unit
-from easykeras.layers.general.general_dense import double_dense_layer
+from easykeras.layers.gated.gated_layer import GluLayer
+from easykeras.layers.general.general_dense import DoubleDenseLayer
 from easykeras.example.imdb_util import get_train_test
 
 
@@ -28,14 +28,12 @@ class GcnnModel(keras.Model):
         """
         super(GcnnModel, self).__init__(name='gcnn_model')
         self.embedding_layer = Embedding(config.max_features, config.embedding_dims, input_length=config.max_len)
-        self.gcnn_layer = gated_linear_unit(input_shape=self.embedding_layer.output_shape,
-                                            c_kernel_size=config.kernel_size,
-                                            c_filters=config.filters,
-                                            h_dim=config.hidden_dims,
-                                            kernel_layer="CNN")
+        self.gcnn_layer = GluLayer(c_kernel_size=config.kernel_size,
+                                   c_filters=config.filters,
+                                   h_dim=config.hidden_dims,
+                                   kernel_layer="CNN")
         self.global_pooling_layer = GlobalMaxPooling1D()
-        self.class_layer = double_dense_layer(input_shape=self.global_pooling_layer.output_shape, output_activation='sigmoid', output_size=1)
-
+        self.class_layer = DoubleDenseLayer(output_activation=config.activation, output_size=config.class_num)
 
     def call(self, inputs):
         """
