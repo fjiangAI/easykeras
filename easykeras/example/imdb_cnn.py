@@ -1,63 +1,76 @@
 __author__ = 'jf'
-from keras.preprocessing import sequence
 from keras.layers import Dense, Dropout, Activation
-from keras.layers import Embedding,Input
+from keras.layers import Embedding
 from keras.layers import Conv1D, GlobalMaxPooling1D
-from keras.datasets import imdb
-from keras.models import Model
-#epoch 10: 87.25
-#set parameters:
-max_features = 5000
-maxlen = 400
+import keras
+from easykeras.example.imdb_util import get_train_test
+
+
+# epoch 10: 88.03
+def get_config():
+    return {"input_shape": (400,),
+            "max_features": 5000,
+            "max_len": 400,
+            "embedding_dims": 50,
+            "filters": 250,
+            "kernel_size": 3,
+            "hidden_dims": 250,
+            "class_num": 1,
+            "activation": 'sigmoid'}
+
+
+class CnnModel(keras.Model):
+    def __init__(self, config):
+        super(CnnModel, self).__init__(name='cnn_model')
+        """
+        初始化模型，准备需要的类
+        :param config: 参数集合
+        """
+        self.embedding_layer = Embedding(config.max_features, config.embedding_dims, input_length=config.max_len)
+        self.dropout_layer = Dropout(0.2)
+        self.con_layer = Conv1D(config.filters, config.kernel_size, padding='valid', activation='relu', strides=1)
+        self.global_pooling_layer = GlobalMaxPooling1D()
+        self.dense_layer = Dense(config.hidden_dims)
+        self.dropout_layer2 = Dropout(0.2)
+        self.activation_layer2 = Activation('relu')
+        self.final_activation = config.activation
+        self.class_layer = Dense(config.class_num, activation=self.final_activation)
+
+    def call(self, inputs):
+        """
+        构建模型过程,使用函数式模型
+        :return:
+        """
+        embedding_output = self.embedding_layer(inputs)  # (?,400,50)
+        dropout_output = self.dropout_layer(embedding_output)
+        con_output = self.con_layer(dropout_output)  # (?,398,250)
+        global_pooling_output = self.global_pooling_layer(con_output)  # （？,250）
+        dense_output = self.dense_layer(global_pooling_output)  # (?,250)
+        activation_output2 = self.activation_layer2(dense_output)
+        final_out = self.class_layer(activation_output2)  # (?,1)
+        return final_out
+
+
+# 设定编译参数
+loss = 'binary_crossentropy'
+optimizer = 'adam'
+metrics = ['accuracy']
+
+
+class Config:
+    def __init__(self, config={}):
+        for key, value in config.items():
+            setattr(self, key, value)
+
+
+# 主程序
+x_train, y_train, x_test, y_test = get_train_test()
+model_config = Config(get_config())
+cnn_model = CnnModel(model_config)
+cnn_model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
+
+# 设置超参数
 batch_size = 32
-embedding_dims = 50
-filters = 250
-kernel_size = 3
-hidden_dims = 250
 epochs = 10
-
-print('Loading data...')
-(x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)
-print(len(x_train), 'train sequences')
-print(len(x_test), 'test sequences')
-
-print('Pad sequences (samples x time)')
-x_train = sequence.pad_sequences(x_train, maxlen=maxlen)
-x_test = sequence.pad_sequences(x_test, maxlen=maxlen)
-print('x_train shape:', x_train.shape)
-print('x_test shape:', x_test.shape)
-
-print('Build model...')
-inputs=Input(shape=(400,))
-embedding_layer=Embedding(max_features,
-                    embedding_dims,
-                    input_length=maxlen)
-embedding_output=embedding_layer(inputs) #(?,400,50)
-dropout_layer=Dropout(0.2)
-dropout_output=dropout_layer(embedding_output)
-conv_layer=Conv1D(filters,
-                 kernel_size,
-                 padding='valid',
-                 activation='relu',
-                 strides=1)
-conv_output=conv_layer(dropout_output) #(?,398,250)
-globalpooling_layer=GlobalMaxPooling1D()
-globalpooling_output=globalpooling_layer(conv_output)#（？,250）
-dense_layer2=Dense(hidden_dims)
-dense_layer2_output=dense_layer2(globalpooling_output)# (?,250)
-dropout_layer2_layer=Dropout(0.2)
-dropout_layer2_output=dropout_layer2_layer(dense_layer2_output)
-activation2_layer=Activation('relu')
-activation2_output=activation2_layer(dropout_layer2_output)
-finaldense_layer=Dense(1)
-finaldense_out=finaldense_layer(activation2_output)#(?,1)
-finalactivation_layer=Activation('sigmoid')
-finalactivation_out=finalactivation_layer(finaldense_out)#(?,1)
-model= Model(inputs=[inputs], outputs=finalactivation_out)
-model.compile(loss='binary_crossentropy',
-              optimizer='adam',
-              metrics=['accuracy'])
-history=model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=epochs,
-          validation_data=(x_test, y_test))
+# 训练过程
+cnn_model.fit(x=x_train, y=y_train, batch_size=batch_size, epochs=epochs, validation_data=(x_test, y_test))
