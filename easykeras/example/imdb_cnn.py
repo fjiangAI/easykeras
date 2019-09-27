@@ -21,11 +21,11 @@ def get_config():
 
 class CnnModel(keras.Model):
     def __init__(self, config):
-        super(CnnModel, self).__init__(name='cnn_model')
         """
         初始化模型，准备需要的类
         :param config: 参数集合
         """
+        super(CnnModel, self).__init__(name='cnn_model')
         self.embedding_layer = Embedding(config.max_features, config.embedding_dims, input_length=config.max_len)
         self.dropout_layer = Dropout(0.2)
         self.con_layer = Conv1D(config.filters, config.kernel_size, padding='valid', activation='relu', strides=1)
@@ -69,7 +69,7 @@ model_config = Config(get_config())
 cnn_model = CnnModel(model_config)
 cnn_model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
 
-# 设置超参数
+# 设置训练超参数
 batch_size = 32
 epochs = 10
 # 训练过程
