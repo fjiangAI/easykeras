@@ -51,26 +51,26 @@ class CnnModel(keras.Model):
         return final_out
 
 
-# 设定编译参数
-loss = 'binary_crossentropy'
-optimizer = 'adam'
-metrics = ['accuracy']
-
-
 class Config:
     def __init__(self, config={}):
         for key, value in config.items():
             setattr(self, key, value)
 
 
-# 主程序
-x_train, y_train, x_test, y_test = get_train_test()
-model_config = Config(get_config())
-cnn_model = CnnModel(model_config)
-cnn_model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
+if __name__ == "__main__":
+    # 主程序
+    x_train, y_train, x_test, y_test = get_train_test()
+    model_config = Config(get_config())
+    cnn_model = CnnModel(model_config)
 
-# 设置训练超参数
-batch_size = 32
-epochs = 10
-# 训练过程
-cnn_model.fit(x=x_train, y=y_train, batch_size=batch_size, epochs=epochs, validation_data=(x_test, y_test))
+    # 设定编译参数
+    loss = 'binary_crossentropy'
+    optimizer = 'adam'
+    metrics = ['accuracy']
+    cnn_model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
+
+    # 设置训练超参数
+    batch_size = 32
+    epochs = 10
+    # 训练过程
+    cnn_model.fit(x=x_train, y=y_train, batch_size=batch_size, epochs=epochs, validation_data=(x_test, y_test))
