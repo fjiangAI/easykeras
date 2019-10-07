@@ -4,6 +4,7 @@ from keras.layers import Embedding
 from keras.layers import Conv1D, GlobalMaxPooling1D
 import keras
 from easykeras.example.imdb_util import get_train_test
+from easykeras.example.imdb_util import Config
 
 
 # epoch 10: 88.03
@@ -49,12 +50,6 @@ class CnnModel(keras.Model):
         activation_output2 = self.activation_layer2(dense_output)
         final_out = self.class_layer(activation_output2)  # (?,1)
         return final_out
-
-
-class Config:
-    def __init__(self, config={}):
-        for key, value in config.items():
-            setattr(self, key, value)
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ __author__ = 'jf'
 from easykeras.layers.capsule import Capsule
 from keras.layers import *
 from easykeras.example.imdb_util import get_train_test
+from easykeras.example.imdb_util import Config
 import keras
 
 # epoch 10: 86.29
@@ -42,12 +43,6 @@ def get_config():
             "class_num": 1,
             "activation": 'sigmoid',
             "num_classes": 2}
-
-
-class Config:
-    def __init__(self, config={}):
-        for key, value in config.items():
-            setattr(self, key, value)
 
 
 if __name__ == "__main__":

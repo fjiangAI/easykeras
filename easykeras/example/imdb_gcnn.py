@@ -5,6 +5,7 @@ import keras
 from easykeras.layers.gated.gated_layer import GluLayer
 from easykeras.layers.general.general_dense import DoubleDenseLayer
 from easykeras.example.imdb_util import get_train_test
+from easykeras.example.imdb_util import Config
 
 
 # epoch 10:89.02
@@ -45,12 +46,6 @@ class GcnnModel(keras.Model):
         global_pooling_output = self.global_pooling_layer(gcnn_output)
         final_out = self.class_layer(global_pooling_output)
         return final_out
-
-
-class Config:
-    def __init__(self, config={}):
-        for key, value in config.items():
-            setattr(self, key, value)
 
 
 if __name__ == "__main__":
